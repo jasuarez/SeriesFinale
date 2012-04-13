@@ -735,11 +735,8 @@ class SeriesManager(gobject.GObject):
         dirname = os.path.dirname(save_file_path)
         if not (os.path.exists(dirname) and os.path.isdir(dirname)):
             os.mkdir(dirname)
-        serialized = serializer.serialize(self.series_list)
         save_file_path_tmp = save_file_path + ".tmp"
-        save_file = open(save_file_path_tmp, 'w')
-        save_file.write(serialized)
-        save_file.close()
+        serializer.serialize(save_file_path_tmp, self.series_list)
         os.rename(save_file_path_tmp, save_file_path)
         self.changed = False
         return True

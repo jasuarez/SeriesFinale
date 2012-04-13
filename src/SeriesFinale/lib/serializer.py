@@ -22,19 +22,29 @@ import jsonpickle
 import simplejson as json
 import SeriesFinale.series
 from xml.etree import ElementTree as ET
+import cPickle
 
-def serialize(show_list):
-    return json.dumps(show_list, cls = ShowDecoder, indent = 4)
+def serialize(shows_file_path, show_list):
+    shows_file = open(shows_file_path, 'wb')
+    cPickle.dump(show_list, shows_file, protocol=cPickle.HIGHEST_PROTOCOL)
+    shows_file.close()
 
 def deserialize(shows_file_path):
-    shows_file = open(shows_file_path, 'r')
-    contents = shows_file.read()
-    shows_file.close()
-    # The following test is to guarantee retro-compatibility with the
-    # old jsonpickle generated json
-    if contents.startswith('[{"py/object": "SeriesFinale.series.Show"'):
-        return deserialize_from_old_format(contents)
-    return json.loads(contents, object_hook = show_encoder)
+    try:
+        shows_file = open(shows_file_path, 'rb')
+        series = cPickle.load(shows_file)
+        shows_file.close()
+        return series
+    except:
+        # Try previous versions
+        shows_file = open(shows_file_path, 'r')
+        contents = shows_file.read()
+        shows_file.close()
+        # The following test is to guarantee retro-compatibility with the
+        # old jsonpickle generated json
+        if contents.startswith('[{"py/object": "SeriesFinale.series.Show"'):
+            return deserialize_from_old_format(contents)
+        return json.loads(contents, object_hook = show_encoder)
 
 def deserialize_from_old_format(contents):
     shows_list = jsonpickle.decode(contents)
