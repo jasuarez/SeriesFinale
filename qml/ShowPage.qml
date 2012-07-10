@@ -93,8 +93,13 @@ Page {
 
     }
 
+    ListView {
+        id: listView
+        anchors.fill: parent
+        clip: true
+        model: show.get_seasons_model()
 
-        Header {
+        header: Header {
             id: header
             text: show.showName
             busy: show.busy
@@ -128,14 +133,6 @@ Page {
             }
         }
 
-    ListView {
-        id: listView
-        anchors.top: header.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        clip: true
-        model: show.get_seasons_model()
         delegate: ListRowDelegate {
             id: delegate
             title: show.get_season_name(model.data)
